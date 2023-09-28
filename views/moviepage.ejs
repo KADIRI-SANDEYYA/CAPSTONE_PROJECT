@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Search Page</title>
+    <link rel="icon" type="image/png" href="imdb.png"/>
+    <style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    background-image: url("./netflix.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed; 
+}
+header {
+    background-image: url("./netflix.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    text-align: center;
+    padding: 20px 0;
+}
+h1 {
+    font-size: 50px;
+    margin: 15px;
+    color: #43ea19;
+}
+#searchInput {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+#searchButton {
+    padding: 10px 20px;
+    background-color: #ff6600;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+#searchButton:hover {
+    background-color: #1794f9;
+}
+#movieResults {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #272526;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+.movie {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+.movie h2 {
+    font-size: 20px;
+    margin: 0;
+    color: #82eafc;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.movie p {
+    font-size: 16px;
+    font-weight: 300;
+    text-align: justify;
+    line-height: 1.5em;
+    margin: 8px 0;
+    color: #e4d86e;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+footer{
+    color: #fff;
+}
+.str{
+    color: #efa9d0;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+#date{
+    color: #e4d86e;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+}
+#x{
+    float: left;
+    padding: 10px 20px;
+    background-color: #f3e9db;
+    color: rgb(231, 113, 30);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 15px;
+    text-decoration: none;
+}
+
+#x:hover {
+    background-color: #3585ef;
+    color: white;
+    
+}
+
+#y{
+    float: right;
+    padding: 10px 20px;
+    background-color: #f3e9db;
+    color: rgb(231, 113, 30);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 15px;
+    margin-left: 10px;
+    text-decoration: none;
+}
+#y:hover {
+    background-color: #3585ef;
+    color: white;
+    
+}
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #4694e8;
+    color: rgb(243, 237, 237);
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+}
+.a{
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    font-family: 'Times New Roman', Times, serif;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s; 
+}
+#detailbox{
+    border-radius: 5px;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome To Movie Search Page</h1>
+        <input type="text" id="searchInput" placeholder="Search for a movie">
+        <button id="searchButton">Search</button>
+        <a class="a" id="x" href="homepage.html">Home</a>
+        <a class="a" id="y" class="y" href="login.html">Login</a>
+        <a class="a" id="y"  href="signup.html">Sign Up</a>
+    </header>
+    <div id="movieResults"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const searchButton = document.getElementById('searchButton');
+    const searchInput = document.getElementById('searchInput');
+    const movieResults = document.getElementById('movieResults');
+    const languageMapping = {
+        en: 'English',
+        es: 'Spanish',
+        fr: 'French',
+        de: 'German',
+        te: 'Telugu',
+        ta: 'Tamil',
+        kn:'Kannada',
+        ml:'Malayalam',
+        hi: 'Hindi',
+    };
+    const cinemaindustry = {
+        en: 'Hollywood',
+        es: 'Spanish Cinema',
+        fr: 'French Cinema',
+        de: 'German Cinema',
+        te: 'Tollywood',
+        ta: 'Kollywood',
+        kn: 'Sandalwood',
+        ml: 'Mollywood',
+        hi: 'Bollywood',
+            };
+    searchButton.addEventListener('click', () => {
+        const searchTerm = searchInput.value.trim();
+        if (searchTerm === '') {
+            alert('Please enter a movie title.');
+            return;
+        }
+        const apiKey = '164786c3248643eeaf4879dddb10dcd8';
+        const searchUrl = `https://api.themoviedb.org/3/search/movie?api_key=164786c3248643eeaf4879dddb10dcd8&query=${encodeURIComponent(searchTerm)}`;
+        fetch(searchUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.results && data.results.length > 0) {
+                    const movie = data.results[0]; 
+                    const movieId = movie.id; 
+                    const movieDetailsUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=164786c3248643eeaf4879dddb10dcd8&append_to_response=credits`;
+                    fetch(movieDetailsUrl)
+                        .then(response => response.json())
+                        .then(movieDetails => {
+                            const genreNames = movieDetails.genres.map(genre => genre.name).join(', ');
+                            const actorNames = movieDetails.credits.cast
+                                .slice(0, 5)
+                                .map(actor => actor.name)
+                                .join(', ');
+                            const director = movieDetails.credits.crew.find(person => person.job === 'Director').name;
+                            const runtime = movieDetails.runtime;
+                            const rating = movieDetails.vote_average;
+                            const languageCode = movieDetails.original_language;
+                            const language = languageMapping[languageCode] || languageCode;
+                            const cinemacode =movieDetails.original_language;
+                            const industry = cinemaindustry[cinemacode] || cinemacode;
+                            const releaseDate = new Date(movieDetails.release_date);
+                            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                            const formattedReleaseDate = releaseDate.toLocaleDateString(undefined, options);
+                            const actors = movieDetails.credits.cast.slice(0, 5).map(actor => actor.name).join(', ');
+                            const movieInfoHTML = `
+                                <div id="detailbox" class="movie">
+                                    <h2>${movie.title} (${formattedReleaseDate})</h2>
+                                    <p><strong class="str">Actors :</strong> ${actors}</p>
+                                    <p><strong class="str">Genres :</strong> ${genreNames}</p>
+                                    <p><strong class="str">Director :</strong> ${director}</p>
+                                    <p><strong class="str">Language :</strong> ${language}</p>
+                                    <p><strong class="str">Industry Name:</strong> ${industry}</p>
+                                    <p><strong class="str">Runtime :</strong> ${runtime} minutes</p>
+                                    <p><strong class="str">Rating :</strong> ${rating}</p>
+                                    <p><strong class="str">Year of Release :<strong><span id="date"> ${formattedReleaseDate}</span></p>
+                                    <img  style="border:5px solid rgb(255,240,245);" src="https://image.tmdb.org/t/p/w300${movie.poster_path}" alt="${movie.title} Poster">
+                                    <p><strong class="str">Overview :</strong><i> ${movie.overview}</i></p>
+                                </div>
+                                <center><footer> >> COPY RIGHTS &copy;THIS IS MY OWN MOVIE WEB PAGE!!! << </footer></center>
+                            `;
+                            movieResults.innerHTML = movieInfoHTML;
+                        })
+                        .catch(error => {
+                            console.error('Error fetching movie details:', error);
+                            alert('Error fetching movie details. Please try again later.');
+                        });
+                } else {
+                    movieResults.innerHTML = '<h3 style="color:white">NO MOVIES FOUND ?</h3>';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                alert('Error fetching data. Please try again later.');
+            });
+    });
+});
+    </script>
+</body>
+</html>
